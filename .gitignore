@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.egg-info/
+dist/
+build/
+*.egg
+*.egg-info
+.eggs/
+*.egg-info/
+*.pytest_cache/
+.pytest_cache/
+.mypy_cache/
+.cache/
+
+# Environments
+venv/
+env/
+/.python-version
+
+# IDE files
+.idea/
+.vscode/
+*.code-workspace
+*.pycharm
+*.pyproject
+*.sublime*
+*sublime*
+*.swp
+.DS_Store
