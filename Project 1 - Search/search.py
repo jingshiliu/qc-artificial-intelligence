@@ -90,10 +90,10 @@ def depthFirstSearch(problem: SearchProblem):
     visited = set()
     curState = [problem.getStartState(), []]
     while not problem.isGoalState(curState[0]):
+        visited.add(curState[0])
         for state, action, cost in reversed(problem.getSuccessors(curState[0])):
             if state in visited:
                 continue
-            visited.add(curState[0])
             prevPlan = curState[1].copy()
             prevPlan.append(action)
             stack.push([state, prevPlan])
@@ -111,10 +111,10 @@ def breadthFirstSearch(problem: SearchProblem):
     queue, visited, curNode = util.Queue(), set(), [problem.getStartState(), []]
     while not problem.isGoalState(curNode[0]):
         curState, curPlan = curNode
+        visited.add(curState)
         for state, action, cost in problem.getSuccessors(curState):
             if state in visited:
                 continue
-            visited.add(state)
             newPlan = curPlan.copy()
             newPlan.append(action)
             queue.push([state, newPlan])
