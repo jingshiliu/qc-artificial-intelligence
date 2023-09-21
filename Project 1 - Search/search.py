@@ -86,31 +86,23 @@ def depthFirstSearch(problem: SearchProblem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    oppositeAction = {'South': 'North', 'North': 'South', 'East': 'West', 'West': 'East'}
-    plan = []
+    stack = util.Stack()
     visited = set()
-    foundGoal = False
-
-    def dfs_helper(state):
-        nonlocal foundGoal
-        if problem.isGoalState(state):
-            foundGoal = True
-            return
-        visited.add(state)
-        for location, action, cost in problem.getSuccessors(state):
-            if location in visited:
+    curState = [problem.getStartState(), []]
+    while not problem.isGoalState(curState[0]):
+        for state, action, cost in reversed(problem.getSuccessors(curState[0])):
+            if state in visited:
                 continue
-            plan.append(action)
-            dfs_helper(location)
-            if not foundGoal:
-                # go back to current node
-                plan.append(oppositeAction[action])
-        visited.remove(state)
-    dfs_helper(problem.getStartState())
-    return plan
+            visited.add(curState[0])
+            prevPlan = curState[1].copy()
+            prevPlan.append(action)
+            stack.push([state, prevPlan])
+
+        if stack.isEmpty():
+            break
+        curState = stack.pop()
+
+    return curState[1]
 
 
 
