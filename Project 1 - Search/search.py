@@ -128,10 +128,37 @@ def breadthFirstSearch(problem: SearchProblem):
     return curNode[1]
 
 
-def uniformCostSearch(problem: SearchProblem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+def uniformCostSearch(problem: SearchProblem) -> list:
+    """Search the node of the least total cost first."""
+    priorityQueue = util.PriorityQueue()
+    visited = set()
+    curNode = [problem.getStartState(), [], 0]  # [state, plan, cost]
+    while not problem.isGoalState(curNode[0]):
+        curState, curPlan, curCost = curNode
+        visited.add(curState)
+        for state, action, cost in problem.getSuccessors(curState):
+            if state in visited:
+                continue
+            newPlan = curPlan.copy()
+            newPlan.append(action)
+            newCost = curCost + cost
+            priorityQueue.push([state, newPlan, curCost + cost], newCost)
+
+        if priorityQueue.isEmpty():
+            break
+
+        """
+        # update curNode
+        # since i dont use a set（） to track if a state is in the priority queue and if the one in the priority queue
+        # has cheaper cost
+        # this loop does that implicitly, bc the cheapest duplicated state in the priority queue got popped first
+        # and added to visited set(), if found the curNode already visited, meaning there was a better path to this node
+        # and we should disregard it
+        """
+        while curNode[0] in visited and not priorityQueue.isEmpty():
+            curNode = priorityQueue.pop()
+
+    return curNode[1]
 
 def nullHeuristic(state, problem=None):
     """
