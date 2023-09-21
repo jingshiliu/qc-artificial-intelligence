@@ -19,6 +19,7 @@ Pacman agents (in searchAgents.py).
 
 import util
 
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -70,7 +71,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem: SearchProblem):
     """
@@ -104,7 +106,6 @@ def depthFirstSearch(problem: SearchProblem):
         curNode = stack.pop()
 
     return curNode[1]
-
 
 
 def breadthFirstSearch(problem: SearchProblem):
@@ -160,6 +161,7 @@ def uniformCostSearch(problem: SearchProblem) -> list:
 
     return curNode[1]
 
+
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -167,10 +169,34 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # not using util.PriorityQueueWithFunction() bc cannot store [state, plan, cost, cost + heuristic] as item
+    priorityQueue = util.PriorityQueue()
+    visited = set()
+
+    # [state, plan, cost, cost + heuristic]
+    curNode = [problem.getStartState(), [], 0, heuristic(problem.getStartState(), problem)]
+    while not problem.isGoalState(curNode[0]):
+        curState, curPlan, curCost, estimate = curNode
+        visited.add(curState)
+        for state, action, cost in problem.getSuccessors(curState):
+            if state in visited:
+                continue
+            newPlan = curPlan.copy()
+            newPlan.append(action)
+            newCost = curCost + cost
+            newEstimate = newCost + heuristic(state, problem)
+            priorityQueue.push([state, newPlan, newCost, newEstimate], newEstimate)
+
+        if priorityQueue.isEmpty():
+            break
+
+        while curNode[0] in visited and not priorityQueue.isEmpty():
+            curNode = priorityQueue.pop()
+
+    return curNode[1]
 
 
 # Abbreviations
