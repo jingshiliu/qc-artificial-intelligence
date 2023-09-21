@@ -86,8 +86,33 @@ def depthFirstSearch(problem: SearchProblem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    oppositeAction = {'South': 'North', 'North': 'South', 'East': 'West', 'West': 'East'}
+    plan = []
+    visited = set()
+    foundGoal = False
+
+    def dfs_helper(state):
+        nonlocal foundGoal
+        if problem.isGoalState(state):
+            foundGoal = True
+            return
+        visited.add(state)
+        for location, action, cost in problem.getSuccessors(state):
+            if location in visited:
+                continue
+            plan.append(action)
+            dfs_helper(location)
+            if not foundGoal:
+                # go back to current node
+                plan.append(oppositeAction[action])
+        visited.remove(state)
+    dfs_helper(problem.getStartState())
+    return plan
+
+
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
