@@ -122,7 +122,8 @@ def breadthFirstSearch(problem: SearchProblem):
 
         if queue.isEmpty():
             break
-        curNode = queue.pop()
+        while curNode[0] in visited and not queue.isEmpty():
+            curNode = queue.pop()
 
     return curNode[1]
 
