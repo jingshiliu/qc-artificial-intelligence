@@ -88,21 +88,22 @@ def depthFirstSearch(problem: SearchProblem):
     """
     stack = util.Stack()
     visited = set()
-    curState = [problem.getStartState(), []]
-    while not problem.isGoalState(curState[0]):
-        visited.add(curState[0])
-        for state, action, cost in reversed(problem.getSuccessors(curState[0])):
+    curNode = [problem.getStartState(), []]
+    while not problem.isGoalState(curNode[0]):
+        curState, curPlan = curNode
+        visited.add(curState)
+        for state, action, cost in reversed(problem.getSuccessors(curState)):
             if state in visited:
                 continue
-            prevPlan = curState[1].copy()
-            prevPlan.append(action)
-            stack.push([state, prevPlan])
+            newPlan = curPlan.copy()
+            newPlan.append(action)
+            stack.push([state, newPlan])
 
         if stack.isEmpty():
             break
-        curState = stack.pop()
+        curNode = stack.pop()
 
-    return curState[1]
+    return curNode[1]
 
 
 
