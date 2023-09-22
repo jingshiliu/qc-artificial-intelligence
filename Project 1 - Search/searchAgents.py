@@ -384,11 +384,9 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     admissible (as well as consistent).
     """
     getManhattanDist = lambda xy1, xy2: abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
-    getEuclideanDist = lambda xy1, xy2: ((xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2) ** 0.5
     corners = problem.corners  # These are the corner coordinates
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
-    # closest one use linear distance, others assume can get there without walls after reach the closest one
     position, reachedCorners = state
     distance = 0
     unvisitedCorners = [corner for i, corner in enumerate(corners) if reachedCorners[i] == 0]
@@ -503,9 +501,6 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
-    position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
 
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -532,13 +527,27 @@ class ClosestDotSearchAgent(SearchAgent):
         gameState.
         """
         # Here are some useful elements of the startState
+        def findMazeDistanceAndPath(point1, point2):
+            x1, y1 = point1
+            x2, y2 = point2
+            walls = gameState.getWalls()
+            assert not walls[x1][y1], 'point1 is a wall: ' + str(point1)
+            assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
+            prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
+            plan = search.bfs(prob)
+            return len(plan), plan
+
         startPosition = gameState.getPacmanPosition()
         food = gameState.getFood()
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        food2DArray = food.asList()
+        distances = [(findMazeDistanceAndPath(startPosition,foodPosition),foodPosition) for foodPosition in food2DArray]
+        ans = min(distances)
+        return ans[0][1]
+
+
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -573,9 +582,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x, y = state
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food.count() == 0
 
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
