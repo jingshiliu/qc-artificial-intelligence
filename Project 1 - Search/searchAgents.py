@@ -509,10 +509,16 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     if not foodList:
         return 0
 
+    # A is the furthest food from start position
     furthestFoodPositionA = max([(getManhattanDist(foodPos, position), foodPos) for foodPos in foodList])[1]
-    # B is closer to start position
+    # B is the furthest food from A but is closer to start position
     furthestFoodPositionB = max([(getManhattanDist(foodPos, furthestFoodPositionA), foodPos) for foodPos in foodList])[1]
 
+    # distance from Start to B to A
+    # A is where we want to go the last, before we collect all other foods closer to Pacman
+    # B is closer, and the heuristic estimation is only become smaller closer to B before it's eatten
+    # so Pacman go to B first and eats all the food along the way
+    # Then go to A and eat food along the way
     distance = mazeDistance(position, furthestFoodPositionB, problem.startingGameState)\
                + mazeDistance(furthestFoodPositionA, furthestFoodPositionB, problem.startingGameState)
     return distance
