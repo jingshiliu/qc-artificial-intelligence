@@ -341,7 +341,7 @@ class CornersProblem(search.SearchProblem):
             x, y = state[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            if  self.walls[nextx][nexty]:
+            if self.walls[nextx][nexty]:
                 continue
             nextPosition = (nextx, nexty)
             reachedCorners = list(state[1])
@@ -501,6 +501,21 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
+    position, foodGrid = state
+    getManhattanDist = lambda xy1, xy2: abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+    getEuclideanDist = lambda xy1, xy2: ((xy1[0] - xy2[0]) ** 2 + (xy1[1] - xy2[1]) ** 2) ** 0.5
+
+    foodList = foodGrid.asList()
+    if not foodList:
+        return 0
+
+    furthestFoodPositionA = max([(getManhattanDist(foodPos, position), foodPos) for foodPos in foodList])[1]
+    # B is closer to start position
+    furthestFoodPositionB = max([(getManhattanDist(foodPos, furthestFoodPositionA), foodPos) for foodPos in foodList])[1]
+
+    distance = mazeDistance(position, furthestFoodPositionB, problem.startingGameState)\
+               + mazeDistance(furthestFoodPositionA, furthestFoodPositionB, problem.startingGameState)
+    return distance
 
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -526,6 +541,7 @@ class ClosestDotSearchAgent(SearchAgent):
         Returns a path (a list of actions) to the closest dot, starting from
         gameState.
         """
+
         # Here are some useful elements of the startState
         def findMazeDistanceAndPath(point1, point2):
             x1, y1 = point1
@@ -543,11 +559,10 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         food2DArray = food.asList()
-        distances = [(findMazeDistanceAndPath(startPosition,foodPosition),foodPosition) for foodPosition in food2DArray]
+        distances = [(findMazeDistanceAndPath(startPosition, foodPosition), foodPosition) for foodPosition in
+                     food2DArray]
         ans = min(distances)
         return ans[0][1]
-
-
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
