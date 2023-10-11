@@ -253,13 +253,55 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
     def getAction(self, gameState: GameState):
         """
-        Returns the expectimax action using self.depth and self.evaluationFunction
-
-        All ghosts should be modeled as choosing uniformly at random from their
-        legal moves.
+        Returns the minimax action from the current gameState using self.depth
+        and self.evaluationFunction.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.value(0, gameState, 0)[1]
+
+    def value(self, agentIndex, game_state: GameState, depth):
+        if len(game_state.getLegalActions(agentIndex)) == 0 or self.depth == depth:
+            return self.evaluationFunction(game_state), ""
+
+        if agentIndex == 0:
+            return self.maxValue(agentIndex, game_state, depth)
+        return self.expectValue(agentIndex, game_state, depth)
+
+    def expectValue(self, agentIndex, game_state: GameState, depth):
+        legal_moves = game_state.getLegalActions(agentIndex)
+        expect_value = 0
+
+        for action in legal_moves:
+            successor_game_state = game_state.generateSuccessor(agentIndex, action)
+            successor_index = agentIndex + 1
+            successor_depth = depth
+
+            if successor_index == game_state.getNumAgents():
+                successor_depth += 1
+                successor_index = 0
+
+            cur_value = self.value(successor_index, successor_game_state, successor_depth)[0]
+            expect_value += cur_value
+
+        return expect_value / len(legal_moves), ""
+
+    def maxValue(self, agentIndex, game_state: GameState, depth):
+        max_value = float("-inf")
+        max_action = None
+        for action in game_state.getLegalActions(agentIndex):
+            successor_game_state = game_state.generateSuccessor(agentIndex, action)
+            successor_index = agentIndex + 1
+            successor_depth = depth
+
+            if successor_index == game_state.getNumAgents():
+                successor_depth += 1
+                successor_index = 0
+
+            cur_value = self.value(successor_index, successor_game_state, successor_depth)[0]
+
+            if cur_value > max_value:
+                max_value = cur_value
+                max_action = action
+        return max_value, max_action
 
 def betterEvaluationFunction(currentGameState: GameState):
     """
@@ -268,8 +310,19 @@ def betterEvaluationFunction(currentGameState: GameState):
 
     DESCRIPTION: <write something here so we know what you did>
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+    minGhostDist = min([manhattanDistance(ghostState.getPosition(), newPos) for ghostState in newGhostStates])
+    distanceToFoods = [manhattanDistance(foodPos, newPos) for foodPos in newFood.asList()]
+    minFoodDist = 0.1
+    if distanceToFoods:
+        minFoodDist = min(distanceToFoods)
+
+    return currentGameState.getScore() + minGhostDist / minFoodDist
 
 # Abbreviation
 better = betterEvaluationFunction
