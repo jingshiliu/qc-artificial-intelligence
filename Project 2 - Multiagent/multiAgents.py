@@ -139,7 +139,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         min_value = float("inf")
         min_action = None
         for action in game_state.getLegalActions(agentIndex):
-            successorGameState = game_state.generateSuccessor(agentIndex, action)
+            successor_game_state = game_state.generateSuccessor(agentIndex, action)
             successor_index = agentIndex + 1
             successor_depth = depth
 
@@ -147,7 +147,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 successor_depth += 1
                 successor_index = 0
 
-            cur_value = self.value(successor_index, successorGameState, successor_depth)[0]
+            cur_value = self.value(successor_index, successor_game_state, successor_depth)[0]
             if cur_value < min_value:
                 min_value = cur_value
                 min_action = action
@@ -157,7 +157,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         max_value = float("-inf")
         max_action = None
         for action in game_state.getLegalActions(agentIndex):
-            successorGameState = game_state.generateSuccessor(agentIndex, action)
+            successor_game_state = game_state.generateSuccessor(agentIndex, action)
             successor_index = agentIndex + 1
             successor_depth = depth
 
@@ -165,7 +165,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 successor_depth += 1
                 successor_index = 0
 
-            cur_value = self.value(successor_index, successorGameState, successor_depth)[0]
+            cur_value = self.value(successor_index, successor_game_state, successor_depth)[0]
             if cur_value > max_value:
                 max_value = cur_value
                 max_action = action
@@ -195,7 +195,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         min_value = float("inf")
         min_action = None
         for action in game_state.getLegalActions(agentIndex):
-            successorGameState = game_state.generateSuccessor(agentIndex, action)
+            successor_game_state = game_state.generateSuccessor(agentIndex, action)
             successor_index = agentIndex + 1
             successor_depth = depth
 
@@ -203,7 +203,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 successor_depth += 1
                 successor_index = 0
 
-            cur_value = self.value(successor_index, successorGameState, successor_depth, alpha, beta)[0]
+            cur_value = self.value(successor_index, successor_game_state, successor_depth, alpha, beta)[0]
             if cur_value < alpha:
                 return cur_value, action
 
@@ -225,7 +225,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         max_value = float("-inf")
         max_action = None
         for action in game_state.getLegalActions(agentIndex):
-            successorGameState = game_state.generateSuccessor(agentIndex, action)
+            successor_game_state = game_state.generateSuccessor(agentIndex, action)
             successor_index = agentIndex + 1
             successor_depth = depth
 
@@ -233,7 +233,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 successor_depth += 1
                 successor_index = 0
 
-            cur_value = self.value(successor_index, successorGameState, successor_depth, alpha, beta)[0]
+            cur_value = self.value(successor_index, successor_game_state, successor_depth, alpha, beta)[0]
             if cur_value > beta:
                 return cur_value, action
 
