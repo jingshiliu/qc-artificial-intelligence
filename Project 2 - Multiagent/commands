@@ -1,0 +1,7 @@
+python3 pacman.py -p ReflexAgent -k 2
+
+python3 pacman.py -p MinimaxAgent -l minimaxClassic -a depth=4
+
+python3 pacman.py -p AlphaBetaAgent -a depth=3 -l smallClassic
+
+python3 pacman.py -p ExpectimaxAgent -l minimaxClassic -a depth=3
