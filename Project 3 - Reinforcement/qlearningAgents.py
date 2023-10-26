@@ -167,7 +167,7 @@ class ApproximateQAgent(PacmanQAgent):
     """
 
     def __init__(self, extractor='IdentityExtractor', **args):
-        self.featExtractor = util.lookup(extractor, globals())()
+        self.featExtractor: FeatureExtractor = util.lookup(extractor, globals())()
         PacmanQAgent.__init__(self, **args)
         self.weights = util.Counter()
 
@@ -179,15 +179,24 @@ class ApproximateQAgent(PacmanQAgent):
           Should return Q(state,action) = w * featureVector
           where * is the dotProduct operator
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if not action: return 0.0
+        weights = self.getWeights()
+        features = self.featExtractor.getFeatures(state, action)
+        return sum(weights[key] * features[key] for key in features)
 
     def update(self, state, action, nextState, reward: float):
         """
            Should update your weights based on transition
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        weights = self.getWeights()
+        features = self.featExtractor.getFeatures(state, action)
+        # the difference must calculate once outside the loop
+        # bc the value of diff is same throughout the update() and it will have different value
+        # if we calculate it separately
+        # as the updates of the weight for previous features will affect the difference of later features
+        diff = (reward + self.discount * self.getValue(nextState)) - self.getQValue(state, action)
+        for feat in features:
+            weights[feat] = weights[feat] + self.alpha * diff * features[feat]
 
     def final(self, state):
         """Called at the end of each game."""
@@ -197,5 +206,5 @@ class ApproximateQAgent(PacmanQAgent):
         # did we finish training?
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
-            "*** YOUR CODE HERE ***"
+            print(self.getWeights())
             pass
