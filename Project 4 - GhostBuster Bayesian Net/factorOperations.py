@@ -93,17 +93,33 @@ def joinFactors(factors: List[Factor]):
     if len(factors) > 1:
         intersect = functools.reduce(lambda x, y: x & y, setsOfUnconditioned)
         if len(intersect) > 0:
-            print("Factor failed joinFactors typecheck: ", factor)
+            print("Factor failed joinFactors typecheck: ", factors)
             raise ValueError("unconditionedVariables can only appear in one factor. \n"
                     + "unconditionedVariables: " + str(intersect) + 
                     "\nappear in more than one input factor.\n" + 
                     "Input factors: \n" +
                     "\n".join(map(str, factors)))
 
+    res_unconditioned = set()
+    res_conditioned = set()
 
-    "*** YOUR CODE HERE ***"
-    raiseNotDefined()
-    "*** END YOUR CODE HERE ***"
+    # get variables in resFactors
+    for factor in factors:
+        res_conditioned.update(factor.conditionedVariables())
+        res_unconditioned.update(factor.unconditionedVariables())
+
+    # eliminate variables in conditioned that also appeared in unconditioned
+    # P(X|Y)P(Y) = P(X Y) the conditioned Y is eliminated
+    res_conditioned = res_conditioned - res_unconditioned
+    resFactor = Factor(res_unconditioned, res_conditioned, list(factors)[0].variableDomainsDict())
+
+    for assignment in resFactor.getAllPossibleAssignmentDicts():
+        prob = 1
+        # P(X Y) is product of P(X Y) in all tables
+        for factor in factors:
+            prob *= factor.getProbability(assignment)
+        resFactor.setProbability(assignment, prob)
+    return resFactor
 
 ########### ########### ###########
 ########### QUESTION 3  ###########
