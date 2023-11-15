@@ -632,10 +632,11 @@ class ParticleFilter(InferenceModule):
         """
         self.particles = []
 
-        particle_per_position = self.numParticles / len(self.legalPositions)
-        for pos in self.legalPositions:
-            for _ in range(int(particle_per_position)):
-                self.particles.append(pos)
+        i, total_legal_positions = 0, len(self.legalPositions)
+        for _ in range(self.numParticles):
+            self.particles.append(self.legalPositions[i])
+            i += 1
+            i %= total_legal_positions
 
 
     def getBeliefDistribution(self):
@@ -676,6 +677,8 @@ class ParticleFilter(InferenceModule):
         for particle_pos in self.particles:
             new_beliefs[particle_pos] += self.getObservationProb(observation, pacman_pos, particle_pos, jail_pos)
 
+        # if self.numParticles != len(self.particles):
+        #     print(self.numParticles, len(self.particles))
         if new_beliefs.total() == 0:
             self.initializeUniformly(gameState)
         else:
