@@ -692,6 +692,8 @@ class ParticleFilter(InferenceModule):
         Sample each particle's next state based on its current state and the
         gameState.
         """
-        "*** YOUR CODE HERE ***"
-        raiseNotDefined()
-        "*** END YOUR CODE HERE ***"
+        new_particles = []
+        for particle_pos in self.particles:
+            new_dist = self.getPositionDistribution(gameState, particle_pos)
+            new_particles.append(new_dist.sample())
+        self.particles = new_particles
