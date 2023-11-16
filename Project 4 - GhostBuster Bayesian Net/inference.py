@@ -364,17 +364,11 @@ class DiscreteDistribution(dict):
         """
         self.normalize()
         total = 0.0
-        sample_map = {} #
+        rand = random.random()
         for key, chance in list(sorted(self.items())):
             total += chance
-            sample_map[total] = key
-            if total == 1:
-                break
-
-        rand = random.random()
-        for num in sorted(sample_map.keys()):
-            if rand < num:
-                return sample_map[num]
+            if rand < total:
+                return key
 
 
 class InferenceModule:
@@ -617,7 +611,7 @@ class ParticleFilter(InferenceModule):
 
     def setNumParticles(self, numParticles):
         self.numParticles = numParticles
-    
+
     ########### ########### ###########
     ########### QUESTION 9  ###########
     ########### ########### ###########
@@ -653,7 +647,7 @@ class ParticleFilter(InferenceModule):
         dist.normalize()
         return dist
 
-    
+
     ########### ########### ###########
     ########### QUESTION 10 ###########
     ########### ########### ###########
@@ -677,15 +671,13 @@ class ParticleFilter(InferenceModule):
         for particle_pos in self.particles:
             new_beliefs[particle_pos] += self.getObservationProb(observation, pacman_pos, particle_pos, jail_pos)
 
-        # if self.numParticles != len(self.particles):
-        #     print(self.numParticles, len(self.particles))
         if new_beliefs.total() == 0:
             self.initializeUniformly(gameState)
         else:
             # resample
             self.particles = [new_beliefs.sample() for _ in range(self.numParticles)]
 
-    
+
     ########### ########### ###########
     ########### QUESTION 11 ###########
     ########### ########### ###########
